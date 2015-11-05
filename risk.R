@@ -1,6 +1,8 @@
 #Risk: n versus m armies - who will win.
 library(ggplot2)
 
+1+1 = 2
+
 Rolls <- function(atarm, defarm) { # here atarm is the number of guys -1 - the guys you are actually attacking with
         while (atarm >=2 & defarm >= 1) {
             at <- sort(sample(6, min(3, atarm), replace = TRUE), decreasing = TRUE) #ordered attack dice
