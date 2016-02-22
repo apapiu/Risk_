@@ -1,8 +1,6 @@
 #Risk: n versus m armies - who will win.
 library(ggplot2)
 
-1+1 = 2
-
 Rolls <- function(atarm, defarm) { # here atarm is the number of guys -1 - the guys you are actually attacking with
         while (atarm >=2 & defarm >= 1) {
             at <- sort(sample(6, min(3, atarm), replace = TRUE), decreasing = TRUE) #ordered attack dice
@@ -24,6 +22,9 @@ Rolls <- function(atarm, defarm) { # here atarm is the number of guys -1 - the g
     return(c(atarm, defarm))
 }
 
+
+Rolls(14, 12)
+
 reps <- 100000
 
 sim <- function(att, def, reps = 10000) { #simulates the battle reps times 
@@ -33,18 +34,22 @@ winningprob <- 1 - table(outcome[1,])[1]/reps
 return(list(expec, winningprob, outcome)) #take hist(outcome[1,]) to see the dist
 }
 
-sim(20, 1)[1]
+sim(10, 9)[1]
 
+outcome <- replicate(100000, Rolls(14,12))
+prob <- table(outcome[1,])/reps
+expec
 
-qplot(outcome[1,], binwidth = .5)
+qplot(outcome[1,], binwidth = .5, xlab = "Attacking Armies Remaining", ylab = "Count")
 table(outcome[1,])
 sim(20, 5)[1]
 
-outcome <- replicate(10000, Rolls(40,40))
-prob <- table(outcome[1,])/reps
-expec <- sum(prob * 0:(length(prob)-1))
+jpeg("riskplot11.jpg")
+qplot(outcome[1,], binwidth = .5, xlab = "Attacking Armies Remaining", ylab = "Count")
+dev.off()
 
-prob
+
+
 
 
 #expected value and winning prob on n vs n battLe: blah should have set a seed.
@@ -56,15 +61,23 @@ for (i in count){
     prob[i] <- sim(i,i)[[2]]
 }
 
-plot(ex)
+plot(ex, xlab = "Number of Armies Attacking", ylab = "Ex. Value of At. Armies remaining")
+abline(a = 1, b = 1)
 
-plot(prob)
+
+jpeg("riskplot2.jpg")
+plot(ex, xlab = "Number of Armies Attacking", ylab = "Ex. Value of At. Armies remaining")
+dev.off()
+
+plot(prob, ylab = "Probability of winning on n vs n armies",
+     xlab = "Number of Attacking (and Defending) Armies")
 abline(h = .5) #attack with more than 10 if you are facing a similar number of armies
 
 
 #We are varying the defending army size
 set.seed(124)
 ex3 <- numeric(40)
+prob3 <- numeric(40)
 for (i in count){
     ex3[i] <- sim(20,i)[[1]]
     prob3[i] <- sim(20,i)[[2]]
@@ -85,17 +98,15 @@ sim(20, 1)[3]
 
 #Now we want a confidence interval for say 20 vs 10 based on the distribution:
 set.seed(124)
-temp <- sim(20, 10)
-temp[[1]]
-temp[2]
+simulation <- sim(20, 10)
+simulation[[1]]
+simulation[2]
 
-qplot(temp[[3]][1,], binwidth = .5)
+qplot(simulation[[3]][1,], binwidth = .5, xlab = "Attacking Armies Remaining",
+      ylab = "Count")
 
-dist <- temp[[3]][1,]
 
-hist(dist)
-mean(dist)
-
+dist <- simulation[[3]][1,]
 distance <- abs(dist - mean(dist)) 
 length(distance[distance <8])/10000
 #we get a probability of .9382 for distance = 8 
